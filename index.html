@@ -4,273 +4,458 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Neural USDC Guardian</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --blue:#2775CA;
-  --blue-soft:#4A94D9;
-  --blue-pale:#9DC4EB;
-  --bg:#060A11;
-  --surface:#0C1220;
-  --border:#15202F;
-  --white:#FFFFFF;
-  --gray-1:#D0D7E2;
-  --gray-2:#7A869B;
-  --gray-3:#3E4B5E;
-  --font:'Inter',system-ui,sans-serif;
-  --mono:'JetBrains Mono',monospace;
+  --bg:#05070A;
+  --surface:#0B0F15;
+  --border:rgba(255,255,255,0.05);
+  --white:#ECEEF1;
+  --dim:#5C6370;
+  --muted:#2A3040;
+  --accent:#2775CA;
+  --accent-glow:rgba(39,117,202,0.25);
+  --amber:#E5A54B;
+  --red:#D55;
 }
-html,body{height:100%;overflow:hidden}
-body{font-family:var(--font);background:var(--bg);color:var(--gray-1);-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--dim);-webkit-font-smoothing:antialiased}
 
-/* Full viewport layout */
-.page{display:grid;grid-template-rows:auto 1fr auto;height:100vh;max-height:100vh}
+/* ── Page shell ── */
+.page{height:100vh;display:flex;flex-direction:column}
 
-/* Nav */
-header{padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between}
-.brand{font-weight:700;font-size:0.9rem;color:var(--white);letter-spacing:-0.01em}
-.brand span{color:var(--blue)}
-header a{font-size:0.75rem;color:var(--gray-2);text-decoration:none;font-weight:500;letter-spacing:0.03em;padding:0.5rem 1.2rem;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
-header a:hover{border-color:var(--gray-3);color:var(--gray-1)}
+/* ── Header ── */
+.hd{padding:1.4rem 3.2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{font-size:0.78rem;font-weight:600;color:var(--white);letter-spacing:0.01em;display:flex;align-items:center;gap:0.55rem}
+.logo i{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
+.hd nav a{font-size:0.66rem;color:var(--muted);text-decoration:none;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-left:1.8rem;transition:color .25s}
+.hd nav a:hover{color:var(--dim)}
 
-/* Main split */
-main{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 3rem;gap:2rem;overflow:hidden}
+/* ── Main ── */
+.main{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 3.2rem}
 
-/* Left - text */
-.text-col{max-width:480px;justify-self:end;padding-right:3rem}
-.text-col h1{font-size:3.2rem;font-weight:700;color:var(--white);letter-spacing:-0.04em;line-height:1.08;margin-bottom:1.5rem}
-.text-col h1 span{color:var(--blue)}
-.text-col p{font-size:0.95rem;color:var(--gray-2);line-height:1.7;font-weight:400;margin-bottom:2.5rem}
-.text-col p strong{color:var(--gray-1);font-weight:600}
+/* Background grid */
+.main::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,0.018) 1px, transparent 0);
+  background-size:40px 40px;
+  pointer-events:none;
+}
 
-/* Live scenario */
-.scenario{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
-.scenario-label{font-size:0.6rem;font-weight:600;color:var(--gray-3);letter-spacing:0.12em;text-transform:uppercase;padding:0.65rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
-.scenario-label::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--blue);animation:blink 2s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
-.scenario-body{padding:1rem 1.2rem;display:grid;grid-template-columns:1fr auto;gap:0.5rem 1.5rem;align-items:center}
-.scenario-body .label{font-size:0.68rem;color:var(--gray-3);font-weight:500;text-transform:uppercase;letter-spacing:0.06em}
-.scenario-body .val{font-family:var(--mono);font-size:0.8rem;color:var(--white);font-weight:500;text-align:right}
-.scenario-body .val.blue{color:var(--blue)}
-.scenario-body .val.verdict{font-weight:700;font-size:0.75rem;padding:0.2rem 0.7rem;border-radius:4px;background:rgba(39,117,202,0.1);text-align:center}
+.inner{display:grid;grid-template-columns:380px 1fr;gap:4rem;align-items:center;max-width:1100px;width:100%;position:relative;z-index:1}
 
-/* Right - visualization */
-.viz-col{position:relative;justify-self:start;width:100%;max-width:560px}
-.viz-col svg{width:100%;height:auto;display:block}
+/* ── Left ── */
+.left{}
+.tag{font-size:0.6rem;font-weight:600;color:var(--accent);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:2rem;opacity:0.85}
+.left h1{font-size:2.6rem;font-weight:700;color:var(--white);letter-spacing:-0.04em;line-height:1.12;margin-bottom:1.6rem}
+.left h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),#5BA3E0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.desc{font-size:0.82rem;color:var(--dim);line-height:1.8;margin-bottom:2.8rem;max-width:340px}
 
-/* SVG styles */
-.nn-conn{stroke:var(--border);stroke-width:0.7;transition:stroke 0.6s,stroke-opacity 0.6s}
-.nn-conn.lit{stroke:var(--blue);stroke-width:1.2;stroke-opacity:0.5}
-.nn-node-bg{fill:var(--bg);stroke:var(--border);stroke-width:1.2;transition:stroke 0.4s,fill 0.4s}
-.nn-node-bg.lit{stroke:var(--blue);fill:var(--surface)}
-.nn-node-bg.output{stroke-width:1.8}
-.nn-node-bg.output.lit{stroke:var(--blue);fill:rgba(39,117,202,0.08)}
-.nn-text{fill:var(--gray-3);font-family:'JetBrains Mono',monospace;font-size:9px;text-anchor:middle;font-weight:500;transition:fill 0.4s}
-.nn-text.lit{fill:var(--white)}
-.nn-text.head{fill:var(--gray-3);font-family:'Inter',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
-.nn-score{fill:var(--white);font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;text-anchor:middle;transition:fill 0.4s}
+/* ── Feed (terminal-style) ── */
+.feed{border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
+.feed-top{display:flex;align-items:center;padding:0.55rem 0.9rem;border-bottom:1px solid var(--border);gap:5px}
+.feed-top b{width:6px;height:6px;border-radius:50%}
+.feed-top b:nth-child(1){background:#E5534B}
+.feed-top b:nth-child(2){background:#E5A54B}
+.feed-top b:nth-child(3){background:#54A854}
+.feed-top span{margin-left:auto;font-size:0.55rem;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.03em}
+.feed-body{padding:0.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.7rem;line-height:2.1}
+.feed-row{display:flex;align-items:baseline;gap:0.65rem}
+.feed-row .p{color:var(--accent);opacity:0.5;user-select:none;flex-shrink:0}
+.feed-row .k{color:var(--muted);width:50px;flex-shrink:0}
+.feed-row .v{color:var(--white)}
+.feed-row .v.score{color:var(--accent);font-weight:500}
+.badge{display:inline-block;padding:0.12rem 0.5rem;border-radius:3px;font-size:0.62rem;font-weight:600;letter-spacing:0.03em}
+.badge.ok{background:rgba(39,117,202,0.1);color:var(--accent)}
+.badge.warn{background:rgba(229,165,75,0.1);color:var(--amber)}
+.badge.deny{background:rgba(221,85,85,0.1);color:var(--red)}
 
-/* Bottom stats */
-footer{padding:1.5rem 3rem;display:flex;align-items:center;justify-content:center;gap:4rem;border-top:1px solid var(--border)}
-.stat{text-align:center}
-.stat .num{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--white)}
-.stat .lbl{font-size:0.6rem;color:var(--gray-3);font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem}
+/* ── Right: Canvas ── */
+.right{position:relative;height:400px}
+canvas{position:absolute;inset:0;width:100%;height:100%}
 
-/* Responsive */
+/* ── Footer ── */
+.ft{padding:1.4rem 3.2rem;border-top:1px solid var(--border);display:flex;justify-content:center;gap:4.5rem;flex-shrink:0}
+.ft .s{text-align:center}
+.ft .n{font-family:'JetBrains Mono',monospace;font-size:0.88rem;font-weight:600;color:var(--white)}
+.ft .l{font-size:0.54rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem}
+
+/* ── Mobile ── */
 @media(max-width:900px){
-  main{grid-template-columns:1fr;text-align:center}
-  .text-col{justify-self:center;padding-right:0;max-width:520px}
-  .text-col h1{font-size:2.2rem}
-  .viz-col{display:none}
-  header{padding:1rem 1.5rem}
-  footer{padding:1rem 1.5rem;gap:2rem}
+  .inner{grid-template-columns:1fr;text-align:center;gap:2rem}
+  .left h1{font-size:1.9rem}
+  .desc{margin-left:auto;margin-right:auto}
+  .right{height:260px}
+  .hd{padding:1rem 1.5rem}
+  .ft{padding:1rem 1.5rem;gap:2rem;flex-wrap:wrap}
 }
 </style>
 </head>
 <body>
 <div class="page">
 
-<header>
-  <div class="brand">Neural <span>USDC</span> Guardian</div>
-  <a href="#" id="contract-link">View Contract</a>
-</header>
+<div class="hd">
+  <div class="logo"><i></i>Neural USDC Guardian</div>
+  <nav>
+    <a href="https://github.com/floflo777/neural-usdc-guardian" target="_blank">GitHub</a>
+    <a href="https://github.com/floflo777/neural-usdc-guardian/blob/main/contracts/NeuralUSDCGuardian.sol" target="_blank">Contract</a>
+  </nav>
+</div>
 
-<main>
-  <div class="text-col">
-    <h1>AI risk scoring<br>inside the <span>smart contract</span></h1>
-    <p>A feedforward neural network deployed <strong>entirely in Solidity</strong>. Every USDC transfer is evaluated on-chain in real time &mdash; no oracles, no external calls. The contract decides autonomously.</p>
+<div class="main">
+  <div class="inner">
+    <div class="left">
+      <div class="tag">On-chain neural inference</div>
+      <h1>AI&nbsp;risk&nbsp;scoring<br>inside the<br><em>smart contract</em></h1>
+      <p class="desc">A feedforward neural network deployed entirely in Solidity. Every USDC transfer is evaluated on-chain. No oracles. No external calls.</p>
 
-    <div class="scenario" id="scenario">
-      <div class="scenario-label">Neural assessment</div>
-      <div class="scenario-body">
-        <span class="label">Transfer</span>
-        <span class="val" id="sc-transfer">0x9F2c &rarr; 0x7a3B</span>
-        <span class="label">Amount</span>
-        <span class="val" id="sc-amount">50 USDC</span>
-        <span class="label">Risk Score</span>
-        <span class="val blue" id="sc-score">18</span>
-        <span class="label">Decision</span>
-        <span class="val verdict blue" id="sc-verdict">APPROVED</span>
+      <div class="feed">
+        <div class="feed-top"><b></b><b></b><b></b><span id="f-status">assessing...</span></div>
+        <div class="feed-body">
+          <div class="feed-row"><span class="p">&gt;</span><span class="k">from</span><span class="v" id="f-from">0x9F2c...4a1B</span></div>
+          <div class="feed-row"><span class="p">&gt;</span><span class="k">to</span><span class="v" id="f-to">0x7a3B...8eC2</span></div>
+          <div class="feed-row"><span class="p">&gt;</span><span class="k">amount</span><span class="v" id="f-amt">50 USDC</span></div>
+          <div class="feed-row"><span class="p">&gt;</span><span class="k">risk</span><span class="v score" id="f-risk">18</span></div>
+          <div class="feed-row"><span class="p">&gt;</span><span class="k">result</span><span class="v"><span class="badge ok" id="f-verdict">APPROVED</span></span></div>
+        </div>
       </div>
     </div>
+
+    <div class="right">
+      <canvas id="nn"></canvas>
+    </div>
   </div>
+</div>
 
-  <div class="viz-col">
-    <svg viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg">
-      <!-- connections drawn by JS -->
-      <g id="connections"></g>
-
-      <!-- column labels -->
-      <text x="70" y="30" class="nn-text head">Input</text>
-      <text x="280" y="30" class="nn-text head">Hidden</text>
-      <text x="490" y="30" class="nn-text head">Output</text>
-
-      <!-- input nodes -->
-      <circle id="in0" cx="70" cy="110" r="26" class="nn-node-bg"/>
-      <text x="70" y="114" class="nn-text" id="in0t">amt</text>
-      <circle id="in1" cx="70" cy="185" r="26" class="nn-node-bg"/>
-      <text x="70" y="189" class="nn-text" id="in1t">freq</text>
-      <circle id="in2" cx="70" cy="260" r="26" class="nn-node-bg"/>
-      <text x="70" y="264" class="nn-text" id="in2t">trust</text>
-      <circle id="in3" cx="70" cy="335" r="26" class="nn-node-bg"/>
-      <text x="70" y="339" class="nn-text" id="in3t">time</text>
-
-      <!-- hidden nodes -->
-      <circle id="h0" cx="245" cy="68" r="18" class="nn-node-bg"/>
-      <circle id="h1" cx="245" cy="116" r="18" class="nn-node-bg"/>
-      <circle id="h2" cx="245" cy="164" r="18" class="nn-node-bg"/>
-      <circle id="h3" cx="245" cy="212" r="18" class="nn-node-bg"/>
-      <circle id="h4" cx="245" cy="260" r="18" class="nn-node-bg"/>
-      <circle id="h5" cx="245" cy="308" r="18" class="nn-node-bg"/>
-      <circle id="h6" cx="245" cy="356" r="18" class="nn-node-bg"/>
-      <circle id="h7" cx="315" cy="212" r="18" class="nn-node-bg"/>
-
-      <!-- hidden labels (small) -->
-      <text x="245" y="72" class="nn-text" style="font-size:7px" id="h0t">N0</text>
-      <text x="245" y="120" class="nn-text" style="font-size:7px" id="h1t">N1</text>
-      <text x="245" y="168" class="nn-text" style="font-size:7px" id="h2t">N2</text>
-      <text x="245" y="216" class="nn-text" style="font-size:7px" id="h3t">N3</text>
-      <text x="245" y="264" class="nn-text" style="font-size:7px" id="h4t">N4</text>
-      <text x="245" y="312" class="nn-text" style="font-size:7px" id="h5t">N5</text>
-      <text x="245" y="360" class="nn-text" style="font-size:7px" id="h6t">N6</text>
-      <text x="315" y="216" class="nn-text" style="font-size:7px" id="h7t">N7</text>
-
-      <!-- output node -->
-      <circle id="out0" cx="490" cy="212" r="34" class="nn-node-bg output"/>
-      <text x="490" y="202" class="nn-text head" style="font-size:7px">RISK</text>
-      <text x="490" y="222" class="nn-score" id="nn-score">18</text>
-    </svg>
-  </div>
-</main>
-
-<footer>
-  <div class="stat"><div class="num">4-8-1</div><div class="lbl">Topology</div></div>
-  <div class="stat"><div class="num">41</div><div class="lbl">Parameters</div></div>
-  <div class="stat"><div class="num">100%</div><div class="lbl">On-Chain</div></div>
-  <div class="stat"><div class="num">75</div><div class="lbl">Tests Pass</div></div>
-  <div class="stat"><div class="num">18-dec</div><div class="lbl">Fixed-Point</div></div>
-</footer>
+<div class="ft">
+  <div class="s"><div class="n">4 &mdash; 8 &mdash; 1</div><div class="l">Topology</div></div>
+  <div class="s"><div class="n">41</div><div class="l">Parameters</div></div>
+  <div class="s"><div class="n">100%</div><div class="l">On-chain</div></div>
+  <div class="s"><div class="n">75</div><div class="l">Tests pass</div></div>
+  <div class="s"><div class="n">1e18</div><div class="l">Precision</div></div>
+</div>
 
 </div>
 
 <script>
 (function(){
-  // --- Draw connections ---
-  var ins=[[70,110],[70,185],[70,260],[70,335]];
-  var hid=[[245,68],[245,116],[245,164],[245,212],[245,260],[245,308],[245,356],[315,212]];
-  var out=[490,212];
-  var cG=document.getElementById('connections');
-  var allConns=[];
-  ins.forEach(function(a){
-    hid.forEach(function(b){
-      var l=document.createElementNS('http://www.w3.org/2000/svg','line');
-      l.setAttribute('x1',a[0]+26);l.setAttribute('y1',a[1]);
-      l.setAttribute('x2',b[0]-18);l.setAttribute('y2',b[1]);
-      l.setAttribute('class','nn-conn');
-      cG.appendChild(l);
-      allConns.push({el:l,type:'ih',from:ins.indexOf(a),to:hid.indexOf(b)});
-    });
-  });
-  hid.forEach(function(b,i){
-    var l=document.createElementNS('http://www.w3.org/2000/svg','line');
-    l.setAttribute('x1',b[0]+18);l.setAttribute('y1',b[1]);
-    l.setAttribute('x2',out[0]-34);l.setAttribute('y2',out[1]);
-    l.setAttribute('class','nn-conn');
-    cG.appendChild(l);
-    allConns.push({el:l,type:'ho',from:i});
-  });
+/* ══════════════════════════════════════
+   Canvas neural network visualization
+   ══════════════════════════════════════ */
 
-  // --- Neural network ---
-  var wH=[[2,0,0,0],[0,3,0,0],[0,0,-2,0],[0,0,0,2],[1.5,1.5,0,0],[0,0,-1.5,1.5],[0,0,3,0],[.5,.3,-.5,.3]];
-  var bH=[-2,-1.5,2,-1,-3,-.5,-1,-.3];
-  var wO=[.15,.12,.20,.12,.20,.25,-.70,.12];
-  var bO=-.30;
-  function nn(f){
-    var h=[];for(var i=0;i<8;i++){var s=bH[i];for(var j=0;j<4;j++)s+=f[j]*wH[i][j];h.push(Math.max(0,s));}
-    var o=bO;for(var i=0;i<8;i++)o+=h[i]*wO[i];
-    return{risk:Math.min(100,Math.max(0,Math.round((0.5+0.5*o/(1+Math.abs(o)))*100))),hidden:h};
+var canvas = document.getElementById('nn');
+var ctx = canvas.getContext('2d');
+var dpr = window.devicePixelRatio || 1;
+var W, H;
+
+function resize(){
+  var r = canvas.parentElement.getBoundingClientRect();
+  W = r.width; H = r.height;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resize();
+window.addEventListener('resize', resize);
+
+/* ── Node positions ── */
+var pad = {x: 50, y: 40};
+function layerX(col){
+  // 3 columns: 0=input, 1=hidden, 2=output
+  var cols = [0.08, 0.42, 0.88];
+  return pad.x + cols[col] * (W - 2*pad.x);
+}
+function nodeY(total, idx){
+  var usable = H - 2*pad.y;
+  if(total === 1) return H/2;
+  var gap = usable / (total - 1);
+  return pad.y + idx * gap;
+}
+
+var inputLabels = ['amt','freq','trust','time'];
+var nodes = {input:[], hidden:[], output:[]};
+
+function buildNodes(){
+  nodes.input=[];nodes.hidden=[];nodes.output=[];
+  for(var i=0;i<4;i++) nodes.input.push({x:layerX(0), y:nodeY(4,i), r:16, val:0, label:inputLabels[i]});
+  // Hidden: 2 sub-columns
+  var hx1 = layerX(1) - 20;
+  var hx2 = layerX(1) + 20;
+  for(var i=0;i<4;i++) nodes.hidden.push({x:hx1, y:nodeY(4,i), r:11, val:0});
+  for(var i=0;i<4;i++) nodes.hidden.push({x:hx2, y:nodeY(4,i), r:11, val:0});
+  nodes.output.push({x:layerX(2), y:H/2, r:28, val:0});
+}
+buildNodes();
+window.addEventListener('resize', buildNodes);
+
+/* ── Neural net (same weights as Solidity contract) ── */
+var wH=[[2,0,0,0],[0,3,0,0],[0,0,-2,0],[0,0,0,2],[1.5,1.5,0,0],[0,0,-1.5,1.5],[0,0,3,0],[.5,.3,-.5,.3]];
+var bH=[-2,-1.5,2,-1,-3,-.5,-1,-.3];
+var wO=[.15,.12,.20,.12,.20,.25,-.70,.12];
+var bO=-.30;
+function forward(f){
+  var h=[];
+  for(var i=0;i<8;i++){var s=bH[i];for(var j=0;j<4;j++)s+=f[j]*wH[i][j];h.push(Math.max(0,s));}
+  var o=bO;for(var i=0;i<8;i++)o+=h[i]*wO[i];
+  var sig=0.5+0.5*o/(1+Math.abs(o));
+  return{risk:Math.min(100,Math.max(0,Math.round(sig*100))),h:h};
+}
+
+/* ── Scenarios ── */
+var scenarios=[
+  {from:'0x9F2c...4a1B',to:'0x7a3B...8eC2',amt:'50 USDC',f:[1,0.2,1,0.3]},
+  {from:'0xaB12...7fD3',to:'0x4c2E...1bA9',amt:'2,400 USDC',f:[5,0,0,0]},
+  {from:'0x3dF1...c8E6',to:'0x8eA4...2dB7',amt:'120 USDC',f:[2,0.6,0,0.5]},
+  {from:'0x1bC7...9aF2',to:'0x6a9D...3eC8',amt:'15 USDC',f:[1,0,1,0]},
+  {from:'0x5eD3...f1A4',to:'0xf2C8...6bD9',amt:'8,900 USDC',f:[10,2,0,0.95]},
+  {from:'0x7fA2...d3E1',to:'0x9b3E...4cF7',amt:'200 USDC',f:[1.5,0.1,1,0.2]},
+  {from:'0x2eB9...a7C5',to:'0xc4F1...8dA3',amt:'3,100 USDC',f:[6,1,0,0.8]},
+];
+
+/* ── Particles ── */
+var particles = [];
+function spawnParticles(fromNode, toNode, active){
+  if(!active) return;
+  particles.push({
+    x:fromNode.x, y:fromNode.y,
+    tx:toNode.x, ty:toNode.y,
+    t:0, speed: 0.012 + Math.random()*0.008,
+    alpha:0
+  });
+}
+
+/* ── Animation state ── */
+var currentHidden = [0,0,0,0,0,0,0,0];
+var targetHidden = [0,0,0,0,0,0,0,0];
+var currentRisk = 18;
+var targetRisk = 18;
+var scIdx = 0;
+var lastSwitch = 0;
+var INTERVAL = 3500;
+
+/* ── DOM refs ── */
+var fFrom=document.getElementById('f-from');
+var fTo=document.getElementById('f-to');
+var fAmt=document.getElementById('f-amt');
+var fRisk=document.getElementById('f-risk');
+var fVerdict=document.getElementById('f-verdict');
+
+function switchScenario(){
+  var sc = scenarios[scIdx % scenarios.length]; scIdx++;
+  var res = forward(sc.f);
+  targetRisk = res.risk;
+  targetHidden = res.h.slice();
+
+  fFrom.textContent=sc.from;
+  fTo.textContent=sc.to;
+  fAmt.textContent=sc.amt;
+  fRisk.textContent=res.risk;
+
+  var v=res.risk<30?'APPROVED':res.risk<70?'TIMELOCK':'MULTI-SIG';
+  var c=res.risk<30?'ok':res.risk<70?'warn':'deny';
+  fVerdict.textContent=v;
+  fVerdict.className='badge '+c;
+
+  // Spawn particles input→hidden
+  for(var i=0;i<4;i++){
+    for(var j=0;j<8;j++){
+      if(res.h[j]>0.01) spawnParticles(nodes.input[i], nodes.hidden[j], true);
+    }
+  }
+  // hidden→output
+  setTimeout(function(){
+    for(var j=0;j<8;j++){
+      if(res.h[j]>0.01) spawnParticles(nodes.hidden[j], nodes.output[0], true);
+    }
+  }, 600);
+}
+
+/* ── Bezier helper ── */
+function bezierPoint(x1,y1,x2,y2,t){
+  var cx1=x1+(x2-x1)*0.4, cy1=y1;
+  var cx2=x1+(x2-x1)*0.6, cy2=y2;
+  var u=1-t;
+  return{
+    x: u*u*u*x1 + 3*u*u*t*cx1 + 3*u*t*t*cx2 + t*t*t*x2,
+    y: u*u*u*y1 + 3*u*u*t*cy1 + 3*u*t*t*cy2 + t*t*t*y2
+  };
+}
+
+function drawBezier(x1,y1,x2,y2,color,width,alpha){
+  var cx1=x1+(x2-x1)*0.4, cy1=y1;
+  var cx2=x1+(x2-x1)*0.6, cy2=y2;
+  ctx.beginPath();
+  ctx.moveTo(x1,y1);
+  ctx.bezierCurveTo(cx1,cy1,cx2,cy2,x2,y2);
+  ctx.strokeStyle=color;
+  ctx.lineWidth=width;
+  ctx.globalAlpha=alpha;
+  ctx.stroke();
+  ctx.globalAlpha=1;
+}
+
+/* ── Draw frame ── */
+function lerp(a,b,t){return a+(b-a)*t;}
+
+function draw(now){
+  if(!lastSwitch) lastSwitch=now;
+  if(now-lastSwitch>INTERVAL){lastSwitch=now;switchScenario();}
+
+  // Lerp hidden activations
+  for(var i=0;i<8;i++) currentHidden[i]=lerp(currentHidden[i],targetHidden[i],0.06);
+  currentRisk=lerp(currentRisk,targetRisk,0.08);
+
+  // Clear
+  ctx.clearRect(0,0,W,H);
+
+  // Max hidden for normalization
+  var maxH=0.01;
+  for(var i=0;i<8;i++) if(currentHidden[i]>maxH) maxH=currentHidden[i];
+
+  // ── Draw connections ──
+  // Input → Hidden
+  for(var i=0;i<4;i++){
+    for(var j=0;j<8;j++){
+      var a=currentHidden[j]/maxH;
+      var col=a>0.05?'rgba(39,117,202,':'rgba(255,255,255,';
+      var alpha=a>0.05? 0.06+a*0.15 : 0.025;
+      drawBezier(nodes.input[i].x,nodes.input[i].y, nodes.hidden[j].x,nodes.hidden[j].y, col+(alpha)+')', a>0.05?0.8:0.5, 1);
+    }
+  }
+  // Hidden → Output
+  for(var j=0;j<8;j++){
+    var a=currentHidden[j]/maxH;
+    var col=a>0.05?'rgba(39,117,202,':'rgba(255,255,255,';
+    var alpha=a>0.05? 0.06+a*0.15 : 0.025;
+    drawBezier(nodes.hidden[j].x,nodes.hidden[j].y, nodes.output[0].x,nodes.output[0].y, col+(alpha)+')', a>0.05?0.8:0.5, 1);
   }
 
-  var scenarios=[
-    {from:'0x9F2c',to:'0x7a3B',amt:'50',f:[1.0,0.2,1,0.3]},
-    {from:'0xaB12',to:'0x4c2E',amt:'2,400',f:[5.0,0.0,0,0.0]},
-    {from:'0x3dF1',to:'0x8eA4',amt:'120',f:[2.0,0.6,0,0.5]},
-    {from:'0x1bC7',to:'0x6a9D',amt:'15',f:[1.0,0.0,1,0.0]},
-    {from:'0x5eD3',to:'0xf2C8',amt:'8,900',f:[10,2.0,0,0.95]},
-    {from:'0x7fA2',to:'0x9b3E',amt:'200',f:[1.5,0.1,1,0.2]},
-    {from:'0x2eB9',to:'0xc4F1',amt:'3,100',f:[6.0,1.0,0,0.8]},
-  ];
-
-  var idx=0;
-  function runScenario(){
-    var sc=scenarios[idx%scenarios.length];idx++;
-    var res=nn(sc.f);
-    var risk=res.risk;
-    var hidden=res.hidden;
-    var verdict=risk<30?'APPROVED':risk<70?'TIMELOCK':'MULTI-SIG';
-
-    // Update scenario panel
-    document.getElementById('sc-transfer').innerHTML=sc.from+' &rarr; '+sc.to;
-    document.getElementById('sc-amount').textContent=sc.amt+' USDC';
-    document.getElementById('sc-score').textContent=risk;
-    var ve=document.getElementById('sc-verdict');
-    ve.textContent=verdict;
-
-    // Update SVG score
-    document.getElementById('nn-score').textContent=risk;
-
-    // Light up active input nodes (all active since they all feed in)
-    for(var i=0;i<4;i++){
-      document.getElementById('in'+i).classList.add('lit');
-      document.getElementById('in'+i+'t').classList.add('lit');
-    }
-
-    // Light up active hidden nodes
-    for(var i=0;i<8;i++){
-      var node=document.getElementById('h'+i);
-      var txt=document.getElementById('h'+i+'t');
-      if(hidden[i]>0.01){node.classList.add('lit');txt.classList.add('lit');}
-      else{node.classList.remove('lit');txt.classList.remove('lit');}
-    }
-
-    // Light up output
-    document.getElementById('out0').classList.add('lit');
-
-    // Light up connections
-    allConns.forEach(function(c){
-      if(c.type==='ih'){
-        // Light if the target hidden neuron is active
-        c.el.classList.toggle('lit',hidden[c.to]>0.01);
-      }else{
-        c.el.classList.toggle('lit',hidden[c.from]>0.01);
-      }
-    });
+  // ── Update & draw particles ──
+  for(var i=particles.length-1;i>=0;i--){
+    var p=particles[i];
+    p.t+=p.speed;
+    if(p.t<0.1) p.alpha=p.t/0.1;
+    else if(p.t>0.85) p.alpha=(1-p.t)/0.15;
+    else p.alpha=1;
+    if(p.t>=1){particles.splice(i,1);continue;}
+    var pos=bezierPoint(p.x,p.y,p.tx,p.ty,p.t);
+    ctx.beginPath();
+    ctx.arc(pos.x,pos.y,1.5,0,Math.PI*2);
+    ctx.fillStyle='rgba(39,117,202,'+p.alpha*0.8+')';
+    ctx.fill();
+    // glow
+    ctx.beginPath();
+    ctx.arc(pos.x,pos.y,4,0,Math.PI*2);
+    ctx.fillStyle='rgba(39,117,202,'+p.alpha*0.15+')';
+    ctx.fill();
   }
 
-  runScenario();
-  setInterval(runScenario,3000);
+  // ── Draw nodes ──
+  // Input
+  for(var i=0;i<4;i++){
+    var n=nodes.input[i];
+    // Outer ring
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(39,117,202,0.25)';
+    ctx.lineWidth=1;
+    ctx.stroke();
+    // Inner fill
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r-1,0,Math.PI*2);
+    ctx.fillStyle='rgba(39,117,202,0.04)';
+    ctx.fill();
+    // Label
+    ctx.font='500 8.5px "JetBrains Mono",monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(255,255,255,0.55)';
+    ctx.fillText(n.label,n.x,n.y);
+  }
+
+  // Hidden
+  for(var j=0;j<8;j++){
+    var n=nodes.hidden[j];
+    var a=currentHidden[j]/maxH;
+    var glowA=a*0.3;
+
+    // Glow
+    if(a>0.05){
+      var grad=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*2.5);
+      grad.addColorStop(0,'rgba(39,117,202,'+glowA+')');
+      grad.addColorStop(1,'rgba(39,117,202,0)');
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.5,0,Math.PI*2);
+      ctx.fillStyle=grad;ctx.fill();
+    }
+
+    // Ring
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.strokeStyle=a>0.05?'rgba(39,117,202,'+(0.15+a*0.35)+')':'rgba(255,255,255,0.04)';
+    ctx.lineWidth=1;ctx.stroke();
+
+    // Core
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r-1,0,Math.PI*2);
+    ctx.fillStyle=a>0.05?'rgba(39,117,202,'+(0.02+a*0.06)+')':'rgba(255,255,255,0.01)';
+    ctx.fill();
+
+    // Label
+    ctx.font='500 7px "JetBrains Mono",monospace';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle=a>0.05?'rgba(255,255,255,'+(0.3+a*0.5)+')':'rgba(255,255,255,0.12)';
+    ctx.fillText('H'+j,n.x,n.y);
+  }
+
+  // Output
+  var on=nodes.output[0];
+  // Big glow
+  var oGrad=ctx.createRadialGradient(on.x,on.y,0,on.x,on.y,on.r*3);
+  oGrad.addColorStop(0,'rgba(39,117,202,0.12)');
+  oGrad.addColorStop(1,'rgba(39,117,202,0)');
+  ctx.beginPath();ctx.arc(on.x,on.y,on.r*3,0,Math.PI*2);
+  ctx.fillStyle=oGrad;ctx.fill();
+
+  // Ring
+  ctx.beginPath();ctx.arc(on.x,on.y,on.r,0,Math.PI*2);
+  ctx.strokeStyle='rgba(39,117,202,0.35)';
+  ctx.lineWidth=1.5;ctx.stroke();
+
+  // Core
+  ctx.beginPath();ctx.arc(on.x,on.y,on.r-1.5,0,Math.PI*2);
+  ctx.fillStyle='rgba(39,117,202,0.04)';ctx.fill();
+
+  // Score text
+  ctx.font='700 20px "JetBrains Mono",monospace';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle=var_risk_color(currentRisk);
+  ctx.fillText(Math.round(currentRisk),on.x,on.y+2);
+
+  // RISK label
+  ctx.font='600 6.5px "Inter",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.25)';
+  ctx.letterSpacing='0.12em';
+  ctx.fillText('RISK',on.x,on.y-14);
+
+  // Column labels
+  ctx.font='600 7.5px "Inter",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.1)';
+  ctx.textAlign='center';
+  ctx.fillText('INPUT',nodes.input[0].x,22);
+  ctx.fillText('HIDDEN',nodes.hidden[0].x+20,22);
+  ctx.fillText('OUTPUT',nodes.output[0].x,22);
+
+  requestAnimationFrame(draw);
+}
+
+function var_risk_color(r){
+  if(r<30) return 'rgba(39,117,202,0.9)';
+  if(r<70) return 'rgba(229,165,75,0.9)';
+  return 'rgba(221,85,85,0.9)';
+}
+
+// Kick off
+switchScenario();
+requestAnimationFrame(draw);
+
 })();
 </script>
 </body>
