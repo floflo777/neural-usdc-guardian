@@ -1,0 +1,18 @@
+{
+  "name": "neural-usdc-guardian",
+  "version": "1.0.0",
+  "description": "On-chain neural network for USDC transfer risk assessment",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "test:verbose": "npx hardhat test --verbose",
+    "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  }
+}

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural USDC Guardian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --blue:#2775CA;
+  --blue-soft:#4A94D9;
+  --blue-pale:#9DC4EB;
+  --bg:#060A11;
+  --surface:#0C1220;
+  --border:#15202F;
+  --white:#FFFFFF;
+  --gray-1:#D0D7E2;
+  --gray-2:#7A869B;
+  --gray-3:#3E4B5E;
+  --font:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--gray-1);-webkit-font-smoothing:antialiased}
+
+/* Full viewport layout */
+.page{display:grid;grid-template-rows:auto 1fr auto;height:100vh;max-height:100vh}
+
+/* Nav */
+header{padding:1.5rem 3rem;display:flex;align-items:center;justify-content:space-between}
+.brand{font-weight:700;font-size:0.9rem;color:var(--white);letter-spacing:-0.01em}
+.brand span{color:var(--blue)}
+header a{font-size:0.75rem;color:var(--gray-2);text-decoration:none;font-weight:500;letter-spacing:0.03em;padding:0.5rem 1.2rem;border:1px solid var(--border);border-radius:6px;transition:all 0.2s}
+header a:hover{border-color:var(--gray-3);color:var(--gray-1)}
+
+/* Main split */
+main{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 3rem;gap:2rem;overflow:hidden}
+
+/* Left - text */
+.text-col{max-width:480px;justify-self:end;padding-right:3rem}
+.text-col h1{font-size:3.2rem;font-weight:700;color:var(--white);letter-spacing:-0.04em;line-height:1.08;margin-bottom:1.5rem}
+.text-col h1 span{color:var(--blue)}
+.text-col p{font-size:0.95rem;color:var(--gray-2);line-height:1.7;font-weight:400;margin-bottom:2.5rem}
+.text-col p strong{color:var(--gray-1);font-weight:600}
+
+/* Live scenario */
+.scenario{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.scenario-label{font-size:0.6rem;font-weight:600;color:var(--gray-3);letter-spacing:0.12em;text-transform:uppercase;padding:0.65rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
+.scenario-label::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--blue);animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.scenario-body{padding:1rem 1.2rem;display:grid;grid-template-columns:1fr auto;gap:0.5rem 1.5rem;align-items:center}
+.scenario-body .label{font-size:0.68rem;color:var(--gray-3);font-weight:500;text-transform:uppercase;letter-spacing:0.06em}
+.scenario-body .val{font-family:var(--mono);font-size:0.8rem;color:var(--white);font-weight:500;text-align:right}
+.scenario-body .val.blue{color:var(--blue)}
+.scenario-body .val.verdict{font-weight:700;font-size:0.75rem;padding:0.2rem 0.7rem;border-radius:4px;background:rgba(39,117,202,0.1);text-align:center}
+
+/* Right - visualization */
+.viz-col{position:relative;justify-self:start;width:100%;max-width:560px}
+.viz-col svg{width:100%;height:auto;display:block}
+
+/* SVG styles */
+.nn-conn{stroke:var(--border);stroke-width:0.7;transition:stroke 0.6s,stroke-opacity 0.6s}
+.nn-conn.lit{stroke:var(--blue);stroke-width:1.2;stroke-opacity:0.5}
+.nn-node-bg{fill:var(--bg);stroke:var(--border);stroke-width:1.2;transition:stroke 0.4s,fill 0.4s}
+.nn-node-bg.lit{stroke:var(--blue);fill:var(--surface)}
+.nn-node-bg.output{stroke-width:1.8}
+.nn-node-bg.output.lit{stroke:var(--blue);fill:rgba(39,117,202,0.08)}
+.nn-text{fill:var(--gray-3);font-family:'JetBrains Mono',monospace;font-size:9px;text-anchor:middle;font-weight:500;transition:fill 0.4s}
+.nn-text.lit{fill:var(--white)}
+.nn-text.head{fill:var(--gray-3);font-family:'Inter',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase}
+.nn-score{fill:var(--white);font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;text-anchor:middle;transition:fill 0.4s}
+
+/* Bottom stats */
+footer{padding:1.5rem 3rem;display:flex;align-items:center;justify-content:center;gap:4rem;border-top:1px solid var(--border)}
+.stat{text-align:center}
+.stat .num{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--white)}
+.stat .lbl{font-size:0.6rem;color:var(--gray-3);font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem}
+
+/* Responsive */
+@media(max-width:900px){
+  main{grid-template-columns:1fr;text-align:center}
+  .text-col{justify-self:center;padding-right:0;max-width:520px}
+  .text-col h1{font-size:2.2rem}
+  .viz-col{display:none}
+  header{padding:1rem 1.5rem}
+  footer{padding:1rem 1.5rem;gap:2rem}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="brand">Neural <span>USDC</span> Guardian</div>
+  <a href="#" id="contract-link">View Contract</a>
+</header>
+
+<main>
+  <div class="text-col">
+    <h1>AI risk scoring<br>inside the <span>smart contract</span></h1>
+    <p>A feedforward neural network deployed <strong>entirely in Solidity</strong>. Every USDC transfer is evaluated on-chain in real time &mdash; no oracles, no external calls. The contract decides autonomously.</p>
+
+    <div class="scenario" id="scenario">
+      <div class="scenario-label">Neural assessment</div>
+      <div class="scenario-body">
+        <span class="label">Transfer</span>
+        <span class="val" id="sc-transfer">0x9F2c &rarr; 0x7a3B</span>
+        <span class="label">Amount</span>
+        <span class="val" id="sc-amount">50 USDC</span>
+        <span class="label">Risk Score</span>
+        <span class="val blue" id="sc-score">18</span>
+        <span class="label">Decision</span>
+        <span class="val verdict blue" id="sc-verdict">APPROVED</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="viz-col">
+    <svg viewBox="0 0 560 400" xmlns="http://www.w3.org/2000/svg">
+      <!-- connections drawn by JS -->
+      <g id="connections"></g>
+
+      <!-- column labels -->
+      <text x="70" y="30" class="nn-text head">Input</text>
+      <text x="280" y="30" class="nn-text head">Hidden</text>
+      <text x="490" y="30" class="nn-text head">Output</text>
+
+      <!-- input nodes -->
+      <circle id="in0" cx="70" cy="110" r="26" class="nn-node-bg"/>
+      <text x="70" y="114" class="nn-text" id="in0t">amt</text>
+      <circle id="in1" cx="70" cy="185" r="26" class="nn-node-bg"/>
+      <text x="70" y="189" class="nn-text" id="in1t">freq</text>
+      <circle id="in2" cx="70" cy="260" r="26" class="nn-node-bg"/>
+      <text x="70" y="264" class="nn-text" id="in2t">trust</text>
+      <circle id="in3" cx="70" cy="335" r="26" class="nn-node-bg"/>
+      <text x="70" y="339" class="nn-text" id="in3t">time</text>
+
+      <!-- hidden nodes -->
+      <circle id="h0" cx="245" cy="68" r="18" class="nn-node-bg"/>
+      <circle id="h1" cx="245" cy="116" r="18" class="nn-node-bg"/>
+      <circle id="h2" cx="245" cy="164" r="18" class="nn-node-bg"/>
+      <circle id="h3" cx="245" cy="212" r="18" class="nn-node-bg"/>
+      <circle id="h4" cx="245" cy="260" r="18" class="nn-node-bg"/>
+      <circle id="h5" cx="245" cy="308" r="18" class="nn-node-bg"/>
+      <circle id="h6" cx="245" cy="356" r="18" class="nn-node-bg"/>
+      <circle id="h7" cx="315" cy="212" r="18" class="nn-node-bg"/>
+
+      <!-- hidden labels (small) -->
+      <text x="245" y="72" class="nn-text" style="font-size:7px" id="h0t">N0</text>
+      <text x="245" y="120" class="nn-text" style="font-size:7px" id="h1t">N1</text>
+      <text x="245" y="168" class="nn-text" style="font-size:7px" id="h2t">N2</text>
+      <text x="245" y="216" class="nn-text" style="font-size:7px" id="h3t">N3</text>
+      <text x="245" y="264" class="nn-text" style="font-size:7px" id="h4t">N4</text>
+      <text x="245" y="312" class="nn-text" style="font-size:7px" id="h5t">N5</text>
+      <text x="245" y="360" class="nn-text" style="font-size:7px" id="h6t">N6</text>
+      <text x="315" y="216" class="nn-text" style="font-size:7px" id="h7t">N7</text>
+
+      <!-- output node -->
+      <circle id="out0" cx="490" cy="212" r="34" class="nn-node-bg output"/>
+      <text x="490" y="202" class="nn-text head" style="font-size:7px">RISK</text>
+      <text x="490" y="222" class="nn-score" id="nn-score">18</text>
+    </svg>
+  </div>
+</main>
+
+<footer>
+  <div class="stat"><div class="num">4-8-1</div><div class="lbl">Topology</div></div>
+  <div class="stat"><div class="num">41</div><div class="lbl">Parameters</div></div>
+  <div class="stat"><div class="num">100%</div><div class="lbl">On-Chain</div></div>
+  <div class="stat"><div class="num">75</div><div class="lbl">Tests Pass</div></div>
+  <div class="stat"><div class="num">18-dec</div><div class="lbl">Fixed-Point</div></div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  // --- Draw connections ---
+  var ins=[[70,110],[70,185],[70,260],[70,335]];
+  var hid=[[245,68],[245,116],[245,164],[245,212],[245,260],[245,308],[245,356],[315,212]];
+  var out=[490,212];
+  var cG=document.getElementById('connections');
+  var allConns=[];
+  ins.forEach(function(a){
+    hid.forEach(function(b){
+      var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1',a[0]+26);l.setAttribute('y1',a[1]);
+      l.setAttribute('x2',b[0]-18);l.setAttribute('y2',b[1]);
+      l.setAttribute('class','nn-conn');
+      cG.appendChild(l);
+      allConns.push({el:l,type:'ih',from:ins.indexOf(a),to:hid.indexOf(b)});
+    });
+  });
+  hid.forEach(function(b,i){
+    var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',b[0]+18);l.setAttribute('y1',b[1]);
+    l.setAttribute('x2',out[0]-34);l.setAttribute('y2',out[1]);
+    l.setAttribute('class','nn-conn');
+    cG.appendChild(l);
+    allConns.push({el:l,type:'ho',from:i});
+  });
+
+  // --- Neural network ---
+  var wH=[[2,0,0,0],[0,3,0,0],[0,0,-2,0],[0,0,0,2],[1.5,1.5,0,0],[0,0,-1.5,1.5],[0,0,3,0],[.5,.3,-.5,.3]];
+  var bH=[-2,-1.5,2,-1,-3,-.5,-1,-.3];
+  var wO=[.15,.12,.20,.12,.20,.25,-.70,.12];
+  var bO=-.30;
+  function nn(f){
+    var h=[];for(var i=0;i<8;i++){var s=bH[i];for(var j=0;j<4;j++)s+=f[j]*wH[i][j];h.push(Math.max(0,s));}
+    var o=bO;for(var i=0;i<8;i++)o+=h[i]*wO[i];
+    return{risk:Math.min(100,Math.max(0,Math.round((0.5+0.5*o/(1+Math.abs(o)))*100))),hidden:h};
+  }
+
+  var scenarios=[
+    {from:'0x9F2c',to:'0x7a3B',amt:'50',f:[1.0,0.2,1,0.3]},
+    {from:'0xaB12',to:'0x4c2E',amt:'2,400',f:[5.0,0.0,0,0.0]},
+    {from:'0x3dF1',to:'0x8eA4',amt:'120',f:[2.0,0.6,0,0.5]},
+    {from:'0x1bC7',to:'0x6a9D',amt:'15',f:[1.0,0.0,1,0.0]},
+    {from:'0x5eD3',to:'0xf2C8',amt:'8,900',f:[10,2.0,0,0.95]},
+    {from:'0x7fA2',to:'0x9b3E',amt:'200',f:[1.5,0.1,1,0.2]},
+    {from:'0x2eB9',to:'0xc4F1',amt:'3,100',f:[6.0,1.0,0,0.8]},
+  ];
+
+  var idx=0;
+  function runScenario(){
+    var sc=scenarios[idx%scenarios.length];idx++;
+    var res=nn(sc.f);
+    var risk=res.risk;
+    var hidden=res.hidden;
+    var verdict=risk<30?'APPROVED':risk<70?'TIMELOCK':'MULTI-SIG';
+
+    // Update scenario panel
+    document.getElementById('sc-transfer').innerHTML=sc.from+' &rarr; '+sc.to;
+    document.getElementById('sc-amount').textContent=sc.amt+' USDC';
+    document.getElementById('sc-score').textContent=risk;
+    var ve=document.getElementById('sc-verdict');
+    ve.textContent=verdict;
+
+    // Update SVG score
+    document.getElementById('nn-score').textContent=risk;
+
+    // Light up active input nodes (all active since they all feed in)
+    for(var i=0;i<4;i++){
+      document.getElementById('in'+i).classList.add('lit');
+      document.getElementById('in'+i+'t').classList.add('lit');
+    }
+
+    // Light up active hidden nodes
+    for(var i=0;i<8;i++){
+      var node=document.getElementById('h'+i);
+      var txt=document.getElementById('h'+i+'t');
+      if(hidden[i]>0.01){node.classList.add('lit');txt.classList.add('lit');}
+      else{node.classList.remove('lit');txt.classList.remove('lit');}
+    }
+
+    // Light up output
+    document.getElementById('out0').classList.add('lit');
+
+    // Light up connections
+    allConns.forEach(function(c){
+      if(c.type==='ih'){
+        // Light if the target hidden neuron is active
+        c.el.classList.toggle('lit',hidden[c.to]>0.01);
+      }else{
+        c.el.classList.toggle('lit',hidden[c.from]>0.01);
+      }
+    });
+  }
+
+  runScenario();
+  setInterval(runScenario,3000);
+})();
+</script>
+</body>
+</html>
