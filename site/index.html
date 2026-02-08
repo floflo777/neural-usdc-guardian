@@ -3,90 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neural USDC Guardian</title>
+<title>Dendrite</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#05070A;
-  --surface:#0B0F15;
-  --border:rgba(255,255,255,0.05);
-  --white:#ECEEF1;
-  --dim:#5C6370;
-  --muted:#2A3040;
-  --accent:#2775CA;
-  --accent-glow:rgba(39,117,202,0.25);
-  --amber:#E5A54B;
-  --red:#D55;
+  --bg:#FFFFFF;
+  --surface:#F6F8FB;
+  --border:#E4E9F0;
+  --text:#1A1D26;
+  --dim:#5A6070;
+  --muted:#9CA3B0;
+  --blue:#2775CA;
+  --blue-light:#5BA3E0;
+  --blue-pale:#E8F1FA;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg)}
 body{font-family:'Inter',system-ui,sans-serif;color:var(--dim);-webkit-font-smoothing:antialiased}
 
-/* ── Page shell ── */
 .page{height:100vh;display:flex;flex-direction:column}
 
 /* ── Header ── */
-.hd{padding:1.4rem 3.2rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.logo{font-size:0.78rem;font-weight:600;color:var(--white);letter-spacing:0.01em;display:flex;align-items:center;gap:0.55rem}
-.logo i{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent-glow)}
-.hd nav a{font-size:0.66rem;color:var(--muted);text-decoration:none;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-left:1.8rem;transition:color .25s}
-.hd nav a:hover{color:var(--dim)}
+.hd{padding:1.6rem 3.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--border)}
+.logo{font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:0.01em;display:flex;align-items:center;gap:0.6rem}
+.logo i{width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.hd nav a{font-size:0.85rem;color:var(--muted);text-decoration:none;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;margin-left:2rem;transition:color .25s}
+.hd nav a:hover{color:var(--blue)}
 
 /* ── Main ── */
-.main{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 3.2rem}
-
-/* Background grid */
-.main::before{
-  content:'';position:absolute;inset:0;
-  background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,0.018) 1px, transparent 0);
-  background-size:40px 40px;
-  pointer-events:none;
-}
-
-.inner{display:grid;grid-template-columns:380px 1fr;gap:4rem;align-items:center;max-width:1100px;width:100%;position:relative;z-index:1}
+.main{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:0 3.5rem}
+.inner{display:grid;grid-template-columns:440px 1fr;gap:4.5rem;align-items:center;max-width:1200px;width:100%;position:relative;z-index:1}
 
 /* ── Left ── */
-.left{}
-.tag{font-size:0.6rem;font-weight:600;color:var(--accent);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:2rem;opacity:0.85}
-.left h1{font-size:2.6rem;font-weight:700;color:var(--white);letter-spacing:-0.04em;line-height:1.12;margin-bottom:1.6rem}
-.left h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),#5BA3E0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.desc{font-size:0.82rem;color:var(--dim);line-height:1.8;margin-bottom:2.8rem;max-width:340px}
+.tag{font-size:0.85rem;font-weight:600;color:var(--blue);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:2rem}
+.left h1{font-size:3.4rem;font-weight:700;color:var(--text);letter-spacing:-0.035em;line-height:1.12;margin-bottom:1.8rem}
+.left h1 em{font-style:normal;color:var(--blue)}
+.desc{font-size:1.08rem;color:var(--dim);line-height:1.8;margin-bottom:3rem;max-width:410px}
 
-/* ── Feed (terminal-style) ── */
+/* ── Feed ── */
 .feed{border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
-.feed-top{display:flex;align-items:center;padding:0.55rem 0.9rem;border-bottom:1px solid var(--border);gap:5px}
-.feed-top b{width:6px;height:6px;border-radius:50%}
-.feed-top b:nth-child(1){background:#E5534B}
-.feed-top b:nth-child(2){background:#E5A54B}
-.feed-top b:nth-child(3){background:#54A854}
-.feed-top span{margin-left:auto;font-size:0.55rem;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:0.03em}
-.feed-body{padding:0.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.7rem;line-height:2.1}
-.feed-row{display:flex;align-items:baseline;gap:0.65rem}
-.feed-row .p{color:var(--accent);opacity:0.5;user-select:none;flex-shrink:0}
-.feed-row .k{color:var(--muted);width:50px;flex-shrink:0}
-.feed-row .v{color:var(--white)}
-.feed-row .v.score{color:var(--accent);font-weight:500}
-.badge{display:inline-block;padding:0.12rem 0.5rem;border-radius:3px;font-size:0.62rem;font-weight:600;letter-spacing:0.03em}
-.badge.ok{background:rgba(39,117,202,0.1);color:var(--accent)}
-.badge.warn{background:rgba(229,165,75,0.1);color:var(--amber)}
-.badge.deny{background:rgba(221,85,85,0.1);color:var(--red)}
+.feed-top{display:flex;align-items:center;padding:0.6rem 1rem;border-bottom:1px solid var(--border);gap:6px}
+.feed-top b{width:7px;height:7px;border-radius:50%}
+.feed-top b:nth-child(1){background:#FF5F57}
+.feed-top b:nth-child(2){background:#FEBC2E}
+.feed-top b:nth-child(3){background:#28C840}
+.feed-top span{margin-left:auto;font-size:0.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.feed-body{padding:1.1rem 1.3rem;font-family:'JetBrains Mono',monospace;font-size:0.92rem;line-height:2.2}
+.feed-row{display:flex;align-items:baseline;gap:0.8rem}
+.feed-row .p{color:var(--blue);opacity:0.4;user-select:none;flex-shrink:0}
+.feed-row .k{color:var(--muted);width:55px;flex-shrink:0}
+.feed-row .v{color:var(--text)}
+.feed-row .v.score{color:var(--blue);font-weight:500}
+.badge{display:inline-block;padding:0.2rem 0.7rem;border-radius:4px;font-size:0.82rem;font-weight:600;letter-spacing:0.04em;background:var(--blue-pale);color:var(--blue)}
 
 /* ── Right: Canvas ── */
-.right{position:relative;height:400px}
+.right{position:relative;height:480px}
 canvas{position:absolute;inset:0;width:100%;height:100%}
 
 /* ── Footer ── */
-.ft{padding:1.4rem 3.2rem;border-top:1px solid var(--border);display:flex;justify-content:center;gap:4.5rem;flex-shrink:0}
+.ft{padding:1.6rem 3.5rem;border-top:1px solid var(--border);display:flex;justify-content:center;gap:5rem;flex-shrink:0}
 .ft .s{text-align:center}
-.ft .n{font-family:'JetBrains Mono',monospace;font-size:0.88rem;font-weight:600;color:var(--white)}
-.ft .l{font-size:0.54rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem}
+.ft .n{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:600;color:var(--text)}
+.ft .l{font-size:0.72rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.25rem}
 
-/* ── Mobile ── */
 @media(max-width:900px){
   .inner{grid-template-columns:1fr;text-align:center;gap:2rem}
-  .left h1{font-size:1.9rem}
+  .left h1{font-size:2rem}
   .desc{margin-left:auto;margin-right:auto}
-  .right{height:260px}
+  .right{height:300px}
   .hd{padding:1rem 1.5rem}
   .ft{padding:1rem 1.5rem;gap:2rem;flex-wrap:wrap}
 }
@@ -96,7 +80,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 <div class="page">
 
 <div class="hd">
-  <div class="logo"><i></i>Neural USDC Guardian</div>
+  <div class="logo"><i></i>Dendrite</div>
   <nav>
     <a href="https://github.com/floflo777/neural-usdc-guardian" target="_blank">GitHub</a>
     <a href="https://github.com/floflo777/neural-usdc-guardian/blob/main/contracts/NeuralUSDCGuardian.sol" target="_blank">Contract</a>
@@ -117,7 +101,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
           <div class="feed-row"><span class="p">&gt;</span><span class="k">to</span><span class="v" id="f-to">0x7a3B...8eC2</span></div>
           <div class="feed-row"><span class="p">&gt;</span><span class="k">amount</span><span class="v" id="f-amt">50 USDC</span></div>
           <div class="feed-row"><span class="p">&gt;</span><span class="k">risk</span><span class="v score" id="f-risk">18</span></div>
-          <div class="feed-row"><span class="p">&gt;</span><span class="k">result</span><span class="v"><span class="badge ok" id="f-verdict">APPROVED</span></span></div>
+          <div class="feed-row"><span class="p">&gt;</span><span class="k">result</span><span class="v"><span class="badge" id="f-verdict">APPROVED</span></span></div>
         </div>
       </div>
     </div>
@@ -140,72 +124,63 @@ canvas{position:absolute;inset:0;width:100%;height:100%}
 
 <script>
 (function(){
-/* ══════════════════════════════════════
-   Canvas neural network visualization
-   ══════════════════════════════════════ */
 
 var canvas = document.getElementById('nn');
 var ctx = canvas.getContext('2d');
 var dpr = window.devicePixelRatio || 1;
 var W, H;
 
+var BLUE = [39,117,202];
+var BLUE_L = [91,163,224];
+var DARK = [26,29,38];
+var MUTED = [156,163,176];
+
+function rgba(c,a){return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';}
+
 function resize(){
   var r = canvas.parentElement.getBoundingClientRect();
   W = r.width; H = r.height;
+  if(W<1||H<1) return;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-resize();
-window.addEventListener('resize', resize);
-
-/* ── Node positions ── */
-var pad = {x: 50, y: 40};
-function layerX(col){
-  // 3 columns: 0=input, 1=hidden, 2=output
-  var cols = [0.08, 0.42, 0.88];
-  return pad.x + cols[col] * (W - 2*pad.x);
-}
-function nodeY(total, idx){
-  var usable = H - 2*pad.y;
-  if(total === 1) return H/2;
-  var gap = usable / (total - 1);
-  return pad.y + idx * gap;
+  buildNodes();
 }
 
-var inputLabels = ['amt','freq','trust','time'];
-var nodes = {input:[], hidden:[], output:[]};
+var pad = {x:40, y:40};
+function lx(col){return pad.x + [0.06,0.40,0.90][col] * (W-2*pad.x);}
+function ny(total,idx){
+  if(total===1) return H/2;
+  return pad.y + idx*((H-2*pad.y)/(total-1));
+}
+
+var IL = ['amt','freq','trust','time'];
+var N = {i:[],h:[],o:[]};
 
 function buildNodes(){
-  nodes.input=[];nodes.hidden=[];nodes.output=[];
-  for(var i=0;i<4;i++) nodes.input.push({x:layerX(0), y:nodeY(4,i), r:16, val:0, label:inputLabels[i]});
-  // Hidden: 2 sub-columns
-  var hx1 = layerX(1) - 20;
-  var hx2 = layerX(1) + 20;
-  for(var i=0;i<4;i++) nodes.hidden.push({x:hx1, y:nodeY(4,i), r:11, val:0});
-  for(var i=0;i<4;i++) nodes.hidden.push({x:hx2, y:nodeY(4,i), r:11, val:0});
-  nodes.output.push({x:layerX(2), y:H/2, r:28, val:0});
+  N.i=[];N.h=[];N.o=[];
+  for(var i=0;i<4;i++) N.i.push({x:lx(0),y:ny(4,i),r:22,label:IL[i]});
+  var x1=lx(1)-28, x2=lx(1)+28;
+  for(var i=0;i<4;i++) N.h.push({x:x1,y:ny(4,i),r:16});
+  for(var i=0;i<4;i++) N.h.push({x:x2,y:ny(4,i),r:16});
+  N.o.push({x:lx(2),y:H/2,r:40});
 }
-buildNodes();
-window.addEventListener('resize', buildNodes);
 
-/* ── Neural net (same weights as Solidity contract) ── */
+/* Neural net weights (same as Solidity contract) */
 var wH=[[2,0,0,0],[0,3,0,0],[0,0,-2,0],[0,0,0,2],[1.5,1.5,0,0],[0,0,-1.5,1.5],[0,0,3,0],[.5,.3,-.5,.3]];
 var bH=[-2,-1.5,2,-1,-3,-.5,-1,-.3];
 var wO=[.15,.12,.20,.12,.20,.25,-.70,.12];
 var bO=-.30;
-function forward(f){
+function fwd(f){
   var h=[];
   for(var i=0;i<8;i++){var s=bH[i];for(var j=0;j<4;j++)s+=f[j]*wH[i][j];h.push(Math.max(0,s));}
   var o=bO;for(var i=0;i<8;i++)o+=h[i]*wO[i];
-  var sig=0.5+0.5*o/(1+Math.abs(o));
-  return{risk:Math.min(100,Math.max(0,Math.round(sig*100))),h:h};
+  return{risk:Math.min(100,Math.max(0,Math.round((0.5+0.5*o/(1+Math.abs(o)))*100))),h:h};
 }
 
-/* ── Scenarios ── */
-var scenarios=[
+var SC=[
   {from:'0x9F2c...4a1B',to:'0x7a3B...8eC2',amt:'50 USDC',f:[1,0.2,1,0.3]},
   {from:'0xaB12...7fD3',to:'0x4c2E...1bA9',amt:'2,400 USDC',f:[5,0,0,0]},
   {from:'0x3dF1...c8E6',to:'0x8eA4...2dB7',amt:'120 USDC',f:[2,0.6,0,0.5]},
@@ -215,246 +190,149 @@ var scenarios=[
   {from:'0x2eB9...a7C5',to:'0xc4F1...8dA3',amt:'3,100 USDC',f:[6,1,0,0.8]},
 ];
 
-/* ── Particles ── */
-var particles = [];
-function spawnParticles(fromNode, toNode, active){
-  if(!active) return;
-  particles.push({
-    x:fromNode.x, y:fromNode.y,
-    tx:toNode.x, ty:toNode.y,
-    t:0, speed: 0.012 + Math.random()*0.008,
-    alpha:0
-  });
+var parts=[];
+function spawn(a,b){parts.push({x:a.x,y:a.y,tx:b.x,ty:b.y,t:0,sp:0.01+Math.random()*0.008});}
+
+var curH=[0,0,0,0,0,0,0,0],tgtH=[0,0,0,0,0,0,0,0];
+var curR=18,tgtR=18,si=0,lt=0,INT=3500;
+
+var eF=document.getElementById('f-from'),eT=document.getElementById('f-to');
+var eA=document.getElementById('f-amt'),eR=document.getElementById('f-risk'),eV=document.getElementById('f-verdict');
+
+function next(){
+  var s=SC[si%SC.length];si++;
+  var r=fwd(s.f);tgtR=r.risk;tgtH=r.h.slice();
+  eF.textContent=s.from;eT.textContent=s.to;eA.textContent=s.amt;
+  eR.textContent=r.risk;
+  eV.textContent=r.risk<30?'APPROVED':r.risk<70?'TIMELOCK':'MULTI-SIG';
+  for(var i=0;i<4;i++) for(var j=0;j<8;j++) if(r.h[j]>0.01) spawn(N.i[i],N.h[j]);
+  setTimeout(function(){for(var j=0;j<8;j++) if(tgtH[j]>0.01) spawn(N.h[j],N.o[0]);},550);
 }
 
-/* ── Animation state ── */
-var currentHidden = [0,0,0,0,0,0,0,0];
-var targetHidden = [0,0,0,0,0,0,0,0];
-var currentRisk = 18;
-var targetRisk = 18;
-var scIdx = 0;
-var lastSwitch = 0;
-var INTERVAL = 3500;
-
-/* ── DOM refs ── */
-var fFrom=document.getElementById('f-from');
-var fTo=document.getElementById('f-to');
-var fAmt=document.getElementById('f-amt');
-var fRisk=document.getElementById('f-risk');
-var fVerdict=document.getElementById('f-verdict');
-
-function switchScenario(){
-  var sc = scenarios[scIdx % scenarios.length]; scIdx++;
-  var res = forward(sc.f);
-  targetRisk = res.risk;
-  targetHidden = res.h.slice();
-
-  fFrom.textContent=sc.from;
-  fTo.textContent=sc.to;
-  fAmt.textContent=sc.amt;
-  fRisk.textContent=res.risk;
-
-  var v=res.risk<30?'APPROVED':res.risk<70?'TIMELOCK':'MULTI-SIG';
-  var c=res.risk<30?'ok':res.risk<70?'warn':'deny';
-  fVerdict.textContent=v;
-  fVerdict.className='badge '+c;
-
-  // Spawn particles input→hidden
-  for(var i=0;i<4;i++){
-    for(var j=0;j<8;j++){
-      if(res.h[j]>0.01) spawnParticles(nodes.input[i], nodes.hidden[j], true);
-    }
-  }
-  // hidden→output
-  setTimeout(function(){
-    for(var j=0;j<8;j++){
-      if(res.h[j]>0.01) spawnParticles(nodes.hidden[j], nodes.output[0], true);
-    }
-  }, 600);
+function bpt(x1,y1,x2,y2,t){
+  var c1=x1+(x2-x1)*.4,d1=y1,c2=x1+(x2-x1)*.6,d2=y2,u=1-t;
+  return{x:u*u*u*x1+3*u*u*t*c1+3*u*t*t*c2+t*t*t*x2,y:u*u*u*y1+3*u*u*t*d1+3*u*t*t*d2+t*t*t*y2};
 }
-
-/* ── Bezier helper ── */
-function bezierPoint(x1,y1,x2,y2,t){
-  var cx1=x1+(x2-x1)*0.4, cy1=y1;
-  var cx2=x1+(x2-x1)*0.6, cy2=y2;
-  var u=1-t;
-  return{
-    x: u*u*u*x1 + 3*u*u*t*cx1 + 3*u*t*t*cx2 + t*t*t*x2,
-    y: u*u*u*y1 + 3*u*u*t*cy1 + 3*u*t*t*cy2 + t*t*t*y2
-  };
+function bez(x1,y1,x2,y2,col,w){
+  ctx.beginPath();ctx.moveTo(x1,y1);
+  ctx.bezierCurveTo(x1+(x2-x1)*.4,y1,x1+(x2-x1)*.6,y2,x2,y2);
+  ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke();
 }
-
-function drawBezier(x1,y1,x2,y2,color,width,alpha){
-  var cx1=x1+(x2-x1)*0.4, cy1=y1;
-  var cx2=x1+(x2-x1)*0.6, cy2=y2;
-  ctx.beginPath();
-  ctx.moveTo(x1,y1);
-  ctx.bezierCurveTo(cx1,cy1,cx2,cy2,x2,y2);
-  ctx.strokeStyle=color;
-  ctx.lineWidth=width;
-  ctx.globalAlpha=alpha;
-  ctx.stroke();
-  ctx.globalAlpha=1;
-}
-
-/* ── Draw frame ── */
 function lerp(a,b,t){return a+(b-a)*t;}
 
 function draw(now){
-  if(!lastSwitch) lastSwitch=now;
-  if(now-lastSwitch>INTERVAL){lastSwitch=now;switchScenario();}
+  if(!W||!H) return requestAnimationFrame(draw);
+  if(!lt) lt=now;
+  if(now-lt>INT){lt=now;next();}
 
-  // Lerp hidden activations
-  for(var i=0;i<8;i++) currentHidden[i]=lerp(currentHidden[i],targetHidden[i],0.06);
-  currentRisk=lerp(currentRisk,targetRisk,0.08);
+  for(var i=0;i<8;i++) curH[i]=lerp(curH[i],tgtH[i],0.06);
+  curR=lerp(curR,tgtR,0.08);
 
-  // Clear
   ctx.clearRect(0,0,W,H);
 
-  // Max hidden for normalization
-  var maxH=0.01;
-  for(var i=0;i<8;i++) if(currentHidden[i]>maxH) maxH=currentHidden[i];
+  var mx=0.01;
+  for(var i=0;i<8;i++) if(curH[i]>mx) mx=curH[i];
 
-  // ── Draw connections ──
-  // Input → Hidden
-  for(var i=0;i<4;i++){
-    for(var j=0;j<8;j++){
-      var a=currentHidden[j]/maxH;
-      var col=a>0.05?'rgba(39,117,202,':'rgba(255,255,255,';
-      var alpha=a>0.05? 0.06+a*0.15 : 0.025;
-      drawBezier(nodes.input[i].x,nodes.input[i].y, nodes.hidden[j].x,nodes.hidden[j].y, col+(alpha)+')', a>0.05?0.8:0.5, 1);
-    }
+  /* Connections */
+  for(var i=0;i<4;i++) for(var j=0;j<8;j++){
+    var a=curH[j]/mx;
+    bez(N.i[i].x,N.i[i].y,N.h[j].x,N.h[j].y,
+      a>0.05?rgba(BLUE,0.08+a*0.2):rgba(BLUE,0.06), a>0.05?1.2:0.6);
   }
-  // Hidden → Output
   for(var j=0;j<8;j++){
-    var a=currentHidden[j]/maxH;
-    var col=a>0.05?'rgba(39,117,202,':'rgba(255,255,255,';
-    var alpha=a>0.05? 0.06+a*0.15 : 0.025;
-    drawBezier(nodes.hidden[j].x,nodes.hidden[j].y, nodes.output[0].x,nodes.output[0].y, col+(alpha)+')', a>0.05?0.8:0.5, 1);
+    var a=curH[j]/mx;
+    bez(N.h[j].x,N.h[j].y,N.o[0].x,N.o[0].y,
+      a>0.05?rgba(BLUE,0.08+a*0.2):rgba(BLUE,0.06), a>0.05?1.2:0.6);
   }
 
-  // ── Update & draw particles ──
-  for(var i=particles.length-1;i>=0;i--){
-    var p=particles[i];
-    p.t+=p.speed;
-    if(p.t<0.1) p.alpha=p.t/0.1;
-    else if(p.t>0.85) p.alpha=(1-p.t)/0.15;
-    else p.alpha=1;
-    if(p.t>=1){particles.splice(i,1);continue;}
-    var pos=bezierPoint(p.x,p.y,p.tx,p.ty,p.t);
-    ctx.beginPath();
-    ctx.arc(pos.x,pos.y,1.5,0,Math.PI*2);
-    ctx.fillStyle='rgba(39,117,202,'+p.alpha*0.8+')';
-    ctx.fill();
-    // glow
-    ctx.beginPath();
-    ctx.arc(pos.x,pos.y,4,0,Math.PI*2);
-    ctx.fillStyle='rgba(39,117,202,'+p.alpha*0.15+')';
-    ctx.fill();
+  /* Particles */
+  for(var i=parts.length-1;i>=0;i--){
+    var p=parts[i];p.t+=p.sp;
+    var pa=p.t<0.1?p.t/0.1:p.t>0.85?(1-p.t)/0.15:1;
+    if(p.t>=1){parts.splice(i,1);continue;}
+    var pt=bpt(p.x,p.y,p.tx,p.ty,p.t);
+    ctx.beginPath();ctx.arc(pt.x,pt.y,2.5,0,Math.PI*2);
+    ctx.fillStyle=rgba(BLUE,pa*0.9);ctx.fill();
+    ctx.beginPath();ctx.arc(pt.x,pt.y,8,0,Math.PI*2);
+    ctx.fillStyle=rgba(BLUE_L,pa*0.12);ctx.fill();
   }
 
-  // ── Draw nodes ──
-  // Input
+  /* Input nodes */
   for(var i=0;i<4;i++){
-    var n=nodes.input[i];
-    // Outer ring
+    var n=N.i[i];
+    // Fill
     ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
-    ctx.strokeStyle='rgba(39,117,202,0.25)';
-    ctx.lineWidth=1;
-    ctx.stroke();
-    // Inner fill
-    ctx.beginPath();ctx.arc(n.x,n.y,n.r-1,0,Math.PI*2);
-    ctx.fillStyle='rgba(39,117,202,0.04)';
-    ctx.fill();
+    ctx.fillStyle=rgba(BLUE,0.12);ctx.fill();
+    // Stroke
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.strokeStyle=rgba(BLUE,0.5);ctx.lineWidth=1.8;ctx.stroke();
     // Label
-    ctx.font='500 8.5px "JetBrains Mono",monospace';
+    ctx.font='500 13px "JetBrains Mono",monospace';
     ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle='rgba(255,255,255,0.55)';
-    ctx.fillText(n.label,n.x,n.y);
+    ctx.fillStyle=rgba(BLUE,1);ctx.fillText(n.label,n.x,n.y);
   }
 
-  // Hidden
+  /* Hidden nodes */
   for(var j=0;j<8;j++){
-    var n=nodes.hidden[j];
-    var a=currentHidden[j]/maxH;
-    var glowA=a*0.3;
-
+    var n=N.h[j],a=curH[j]/mx;
     // Glow
     if(a>0.05){
-      var grad=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*2.5);
-      grad.addColorStop(0,'rgba(39,117,202,'+glowA+')');
-      grad.addColorStop(1,'rgba(39,117,202,0)');
-      ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.5,0,Math.PI*2);
-      ctx.fillStyle=grad;ctx.fill();
+      var g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r*3);
+      g.addColorStop(0,rgba(BLUE_L,a*0.2));g.addColorStop(1,rgba(BLUE_L,0));
+      ctx.beginPath();ctx.arc(n.x,n.y,n.r*3,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
     }
-
-    // Ring
+    // Fill
     ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
-    ctx.strokeStyle=a>0.05?'rgba(39,117,202,'+(0.15+a*0.35)+')':'rgba(255,255,255,0.04)';
-    ctx.lineWidth=1;ctx.stroke();
-
-    // Core
-    ctx.beginPath();ctx.arc(n.x,n.y,n.r-1,0,Math.PI*2);
-    ctx.fillStyle=a>0.05?'rgba(39,117,202,'+(0.02+a*0.06)+')':'rgba(255,255,255,0.01)';
-    ctx.fill();
-
+    ctx.fillStyle=a>0.05?rgba(BLUE,0.1+a*0.15):rgba(BLUE,0.04);ctx.fill();
+    // Stroke
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.strokeStyle=a>0.05?rgba(BLUE,0.35+a*0.4):rgba(BLUE,0.2);
+    ctx.lineWidth=1.2;ctx.stroke();
     // Label
-    ctx.font='500 7px "JetBrains Mono",monospace';
+    ctx.font='500 11px "JetBrains Mono",monospace';
     ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=a>0.05?'rgba(255,255,255,'+(0.3+a*0.5)+')':'rgba(255,255,255,0.12)';
+    ctx.fillStyle=a>0.05?rgba(BLUE,0.7+a*0.3):rgba(BLUE,0.35);
     ctx.fillText('H'+j,n.x,n.y);
   }
 
-  // Output
-  var on=nodes.output[0];
-  // Big glow
-  var oGrad=ctx.createRadialGradient(on.x,on.y,0,on.x,on.y,on.r*3);
-  oGrad.addColorStop(0,'rgba(39,117,202,0.12)');
-  oGrad.addColorStop(1,'rgba(39,117,202,0)');
-  ctx.beginPath();ctx.arc(on.x,on.y,on.r*3,0,Math.PI*2);
-  ctx.fillStyle=oGrad;ctx.fill();
-
-  // Ring
-  ctx.beginPath();ctx.arc(on.x,on.y,on.r,0,Math.PI*2);
-  ctx.strokeStyle='rgba(39,117,202,0.35)';
-  ctx.lineWidth=1.5;ctx.stroke();
-
-  // Core
-  ctx.beginPath();ctx.arc(on.x,on.y,on.r-1.5,0,Math.PI*2);
-  ctx.fillStyle='rgba(39,117,202,0.04)';ctx.fill();
-
-  // Score text
-  ctx.font='700 20px "JetBrains Mono",monospace';
+  /* Output node */
+  var o=N.o[0];
+  // Glow
+  var og=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r*3);
+  og.addColorStop(0,rgba(BLUE_L,0.12));og.addColorStop(1,rgba(BLUE_L,0));
+  ctx.beginPath();ctx.arc(o.x,o.y,o.r*3,0,Math.PI*2);ctx.fillStyle=og;ctx.fill();
+  // Fill
+  ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
+  ctx.fillStyle=rgba(BLUE,0.1);ctx.fill();
+  // Stroke
+  ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);
+  ctx.strokeStyle=rgba(BLUE,0.55);ctx.lineWidth=2.2;ctx.stroke();
+  // Score
+  ctx.font='700 32px "JetBrains Mono",monospace';
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillStyle=var_risk_color(currentRisk);
-  ctx.fillText(Math.round(currentRisk),on.x,on.y+2);
+  ctx.fillStyle=rgba(BLUE,0.95);
+  ctx.fillText(Math.round(curR),o.x,o.y+3);
+  // Label
+  ctx.font='600 10px "Inter",sans-serif';
+  ctx.fillStyle=rgba(MUTED,0.6);
+  ctx.fillText('RISK',o.x,o.y-22);
 
-  // RISK label
-  ctx.font='600 6.5px "Inter",sans-serif';
-  ctx.fillStyle='rgba(255,255,255,0.25)';
-  ctx.letterSpacing='0.12em';
-  ctx.fillText('RISK',on.x,on.y-14);
-
-  // Column labels
-  ctx.font='600 7.5px "Inter",sans-serif';
-  ctx.fillStyle='rgba(255,255,255,0.1)';
-  ctx.textAlign='center';
-  ctx.fillText('INPUT',nodes.input[0].x,22);
-  ctx.fillText('HIDDEN',nodes.hidden[0].x+20,22);
-  ctx.fillText('OUTPUT',nodes.output[0].x,22);
+  /* Column labels */
+  ctx.font='600 10px "Inter",sans-serif';
+  ctx.fillStyle=rgba(MUTED,0.35);ctx.textAlign='center';
+  ctx.fillText('INPUT',N.i[0].x,22);
+  ctx.fillText('HIDDEN',(N.h[0].x+N.h[4].x)/2,22);
+  ctx.fillText('OUTPUT',N.o[0].x,22);
 
   requestAnimationFrame(draw);
 }
 
-function var_risk_color(r){
-  if(r<30) return 'rgba(39,117,202,0.9)';
-  if(r<70) return 'rgba(229,165,75,0.9)';
-  return 'rgba(221,85,85,0.9)';
-}
-
-// Kick off
-switchScenario();
-requestAnimationFrame(draw);
+/* Init after layout */
+requestAnimationFrame(function(){
+  resize();
+  next();
+  requestAnimationFrame(draw);
+});
 
 })();
 </script>
